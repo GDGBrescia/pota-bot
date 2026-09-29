@@ -25,7 +25,7 @@
 ## Struttura
 
 ```
-workshop.ipynb        il notebook del workshop (autosufficiente)
+workshop.ipynb        il notebook del workshop (legge i dati da pota_bot/data/)
 pota_bot/             lo stesso bot, organizzato in file
   agent.py            l'agente: istruzioni, strumenti, guardrail (root_agent)
   tools.py            gli strumenti: eventi, FAQ, notizie, proposte
