@@ -11,7 +11,7 @@
   },
   {
     "domanda": "Come si partecipa agli eventi?",
-    "risposta": "Ti iscrivi alla pagina Bevy di GDG Brescia (gdg.community.dev) e fai RSVP all'evento.",
+    "risposta": "Ti iscrivi alla pagina di GDG Brescia su Bevy (https://gdg.community.dev/gdg-brescia/) e fai RSVP all'evento.",
     "parole_chiave": [
       "partecip",
       "iscri",
@@ -33,7 +33,7 @@
   },
   {
     "domanda": "Come propongo un talk?",
-    "risposta": "Scrivi agli organizer sul gruppo Telegram o su LinkedIn con titolo e due righe di abstract.",
+    "risposta": "Scrivi agli organizer nel gruppo Telegram (https://t.me/agentici) o su LinkedIn, con titolo e due righe di abstract.",
     "parole_chiave": [
       "talk",
       "speaker",
@@ -44,7 +44,7 @@
   },
   {
     "domanda": "Dove trovo slide e materiali?",
-    "risposta": "Li condividiamo nel gruppo Telegram dopo ogni evento. Il codice di questo workshop è su GitHub: github.com/GDGBrescia/pota-bot",
+    "risposta": "Li condividiamo nel gruppo Telegram (https://t.me/agentici) dopo ogni evento. Il codice di questo workshop è su GitHub: https://github.com/GDGBrescia/pota-bot",
     "parole_chiave": [
       "slide",
       "material",

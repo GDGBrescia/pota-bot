@@ -20,6 +20,7 @@
 | Imparare come si costruisce un agente, passo per passo | [`workshop.ipynb`](workshop.ipynb): aprilo in Colab dal badge qui sopra. La prima cella scarica tutto il repo (codice e dati), poi si segue il notebook. Niente da installare |
 | Far girare il bot sul tuo computer | [Provalo in locale](#provalo-in-locale) |
 | Migliorarlo | [`CONTRIBUTING.md`](CONTRIBUTING.md) |
+| Parlarne con la community | [Gruppo Telegram](https://t.me/agentici) |
 
 ## Struttura
 
