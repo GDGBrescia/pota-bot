@@ -1,0 +1,44 @@
+{
+  "eventi_e_opportunita": [
+    {
+      "titolo": "[notizia da inserire]",
+      "sintesi": "...",
+      "link": ""
+    }
+  ],
+  "modelli_ai": [
+    {
+      "titolo": "[notizia da inserire]",
+      "sintesi": "...",
+      "link": ""
+    }
+  ],
+  "strumenti_dev": [
+    {
+      "titolo": "[notizia da inserire]",
+      "sintesi": "...",
+      "link": ""
+    }
+  ],
+  "ai_business": [
+    {
+      "titolo": "[notizia da inserire]",
+      "sintesi": "...",
+      "link": ""
+    }
+  ],
+  "ecosistema_google": [
+    {
+      "titolo": "[notizia da inserire]",
+      "sintesi": "...",
+      "link": ""
+    }
+  ],
+  "paper": [
+    {
+      "titolo": "[notizia da inserire]",
+      "sintesi": "...",
+      "link": ""
+    }
+  ]
+}

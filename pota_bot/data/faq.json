@@ -1,0 +1,66 @@
+[
+  {
+    "domanda": "Cos'è un GDG?",
+    "risposta": "Un Google Developer Group: una community locale e indipendente di persone interessate alle tecnologie Google e all'AI. Organizziamo eventi divulgativi, talk e workshop.",
+    "parole_chiave": [
+      "gdg",
+      "community",
+      "google developer",
+      "chi siete"
+    ]
+  },
+  {
+    "domanda": "Come si partecipa agli eventi?",
+    "risposta": "Ti iscrivi alla pagina Bevy di GDG Brescia (gdg.community.dev) e fai RSVP all'evento.",
+    "parole_chiave": [
+      "partecip",
+      "iscri",
+      "rsvp",
+      "bevy",
+      "venire"
+    ]
+  },
+  {
+    "domanda": "Gli eventi costano?",
+    "risposta": "No, gli eventi della community sono gratuiti.",
+    "parole_chiave": [
+      "cost",
+      "grat",
+      "pag",
+      "prezz",
+      "soldi"
+    ]
+  },
+  {
+    "domanda": "Come propongo un talk?",
+    "risposta": "Scrivi agli organizer sul gruppo Telegram o su LinkedIn con titolo e due righe di abstract.",
+    "parole_chiave": [
+      "talk",
+      "speaker",
+      "intervent",
+      "parlare",
+      "presentare"
+    ]
+  },
+  {
+    "domanda": "Dove trovo slide e materiali?",
+    "risposta": "Li condividiamo nel gruppo Telegram dopo ogni evento. Il codice di questo workshop è su GitHub: github.com/GDGBrescia/pota-bot",
+    "parole_chiave": [
+      "slide",
+      "material",
+      "registrazion",
+      "codice",
+      "github"
+    ]
+  },
+  {
+    "domanda": "C'è un codice di condotta?",
+    "risposta": "Sì, seguiamo le linee guida delle community Google: developers.google.com/community-guidelines",
+    "parole_chiave": [
+      "condotta",
+      "regol",
+      "comportament",
+      "linee guida"
+    ]
+  }
+]
