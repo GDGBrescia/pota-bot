@@ -1,44 +1,122 @@
 {
   "eventi_e_opportunita": [
     {
-      "titolo": "[notizia da inserire]",
-      "sintesi": "...",
-      "link": ""
+      "data": "2026-09-14",
+      "titolo": "DevFest 2026: dal 1 ottobre al 31 dicembre, oltre 800 eventi in 115 paesi",
+      "sintesi": "La stagione delle conferenze delle community Google riparte con il tema \"Build, Secure, Scale: Developers and Builders in the Agentic Era\".",
+      "link": "https://blog.google/innovation-and-ai/technology/developers-tools/devfest2026/"
+    },
+    {
+      "data": "2026-10-03",
+      "titolo": "DevFest Modena, 3 e 4 ottobre: gratis, 68 sessioni di cui 36 su AI",
+      "sintesi": "Due giorni alla Fondazione San Carlo, organizzati da GDG Cloud Modena e dalle community locali. Ingresso libero con registrazione.",
+      "link": "https://devfest.modena.it/en/"
+    },
+    {
+      "data": "2026-10-10",
+      "titolo": "DevFest Roma, sabato 10 ottobre all'Università Roma Tre",
+      "sintesi": "Organizzato da GDG Roma Città: tre track in parallelo, oltre 500 partecipanti attesi.",
+      "link": "https://gdg.community.dev/events/details/google-gdg-roma-citta-presents-devfest-roma-2026/"
     }
   ],
   "modelli_ai": [
     {
-      "titolo": "[notizia da inserire]",
-      "sintesi": "...",
-      "link": ""
+      "data": "2026-09-22",
+      "titolo": "Anthropic rilascia Claude Opus 5.5",
+      "sintesi": "Prestazioni al livello di Claude Fable 5.1 sulla maggior parte dei compiti, con costi di utilizzo più bassi del 40%. Punta su coding agentico e lavoro di conoscenza.",
+      "link": "https://www.anthropic.com/claude-opus-5-5"
+    },
+    {
+      "data": "2026-09-22",
+      "titolo": "OpenAI lancia GPT-6 Sol e GPT-6 Luna",
+      "sintesi": "Sol per il lavoro complesso e il coding, Luna per i volumi alti. Prezzi API dimezzati rispetto alla serie 5.6.",
+      "link": "https://techcrunch.com/2026/09/22/openai-launches-gpt-6-sol-and-luna/"
+    },
+    {
+      "data": "2026-09-02",
+      "titolo": "Google rilascia Gemini 3.8 Flash",
+      "sintesi": "Il Flash più capace di Google, pensato per software engineering su compiti lunghi e per agenti autonomi.",
+      "link": "https://ai.google.dev/gemini-api/docs/changelog"
     }
   ],
   "strumenti_dev": [
     {
-      "titolo": "[notizia da inserire]",
-      "sintesi": "...",
-      "link": ""
+      "data": "2026-09-17",
+      "titolo": "L'agente di Antigravity arriva nella Gemini API",
+      "sintesi": "Con una sola chiamata API si avvia un agente che ragiona, esegue codice, gestisce file e naviga il web in una sandbox Linux. Basato su Gemini 3.8 Flash, disponibile anche nel free tier.",
+      "link": "https://ai.google.dev/gemini-api/docs/antigravity-agent"
+    },
+    {
+      "data": "2026-09-22",
+      "titolo": "GitHub Copilot aggiunge GPT-6 Sol e GPT-6 Luna",
+      "sintesi": "I nuovi modelli OpenAI sono disponibili in Copilot su VS Code, JetBrains, Xcode e GitHub.com, con rilascio graduale e accesso gestito dagli amministratori.",
+      "link": "https://github.blog/changelog/2026-09-22-openais-gpt-6-sol-and-gpt-6-luna-now-available/"
+    },
+    {
+      "data": "2026-09-18",
+      "titolo": "Gemini API: i modelli 2.5 limitati a chi già li usava",
+      "sintesi": "Per i nuovi progetti Google indica di usare Gemini 3.5 Flash-Lite o 3.8 Flash. Da tenere presente se state partendo adesso.",
+      "link": "https://ai.google.dev/gemini-api/docs/changelog"
     }
   ],
   "ai_business": [
     {
-      "titolo": "[notizia da inserire]",
-      "sintesi": "...",
-      "link": ""
+      "data": "2026-09-17",
+      "titolo": "Il 19,5% delle imprese italiane usa l'AI: il doppio in un anno",
+      "sintesi": "Dati Unioncamere-Dintec: oltre il 50% delle grandi aziende, 15% delle piccole. Per il 58,6% delle PMI il primo freno è la mancanza di competenze, ma solo il 7% fa formazione strutturata.",
+      "link": "https://www.ansa.it/canale_tecnologia/notizie/tecnologia/2026/09/17/unioncamere-dintec-195-imprese-italiane-usa-lintelligenza-artificiale_9b8f1f3b-74bd-4fd5-ac8f-e91aa42eae6a.html"
+    },
+    {
+      "data": "2026-09-02",
+      "titolo": "Google Cloud: Gemini Enterprise per finanza e legale, e controlli di spesa per gli agenti",
+      "sintesi": "Versioni dedicate a servizi finanziari e studi legali, più nuovi strumenti di billing e controllo dei costi per chi porta gli agenti in produzione.",
+      "link": "https://cloud.google.com/blog/products/ai-machine-learning/what-google-cloud-announced-in-ai-this-month"
+    },
+    {
+      "data": "2026-09-25",
+      "titolo": "Agenti video per il customer care: Gemini 3.8 Live con Live Avatar è pronto per la produzione",
+      "sintesi": "Agenti conversazionali con avatar video, voce in 97 lingue e chiamate a strumenti durante la conversazione, con endpoint in USA e UE.",
+      "link": "https://cloud.google.com/blog/products/ai-machine-learning/gemini-3-8-live-with-live-avatar-is-now-generally-available"
     }
   ],
   "ecosistema_google": [
     {
-      "titolo": "[notizia da inserire]",
-      "sintesi": "...",
-      "link": ""
+      "data": "2026-09-04",
+      "titolo": "Addio Google Assistant: su Android arriva Gemini",
+      "sintesi": "Da settembre Google rimuove Assistant da telefoni, tablet, Wear OS e Android Auto: al suo posto Gemini. Restano escluse le auto con Google integrato.",
+      "link": "https://9to5google.com/2026/08/04/google-assistant-september-2026-shutdown/"
+    },
+    {
+      "data": "2026-09-22",
+      "titolo": "Gemini API: nuovi modelli di sintesi vocale 3.8 Flash TTS e Flash-Lite TTS",
+      "sintesi": "Nuova generazione text-to-speech con funzioni di design e replica della voce.",
+      "link": "https://ai.google.dev/gemini-api/docs/changelog"
+    },
+    {
+      "data": "2026-09-15",
+      "titolo": "Gemini 3.8 Live: nuovi modelli voce-voce per applicazioni in tempo reale",
+      "sintesi": "Due modelli audio-to-audio, Live e Live Extended Thinking, per applicazioni vocali in tempo reale, anche in versione con ragionamento esteso.",
+      "link": "https://ai.google.dev/gemini-api/docs/changelog"
     }
   ],
   "paper": [
     {
-      "titolo": "[notizia da inserire]",
-      "sintesi": "...",
-      "link": ""
+      "data": "2026-09-28",
+      "titolo": "Gli agenti dicono la verità quando uno strumento fallisce?",
+      "sintesi": "Il benchmark \"Failure-Transparent Agents\" mostra che gli agenti a volte dichiarano successo anche quando un tool ha fallito. Chiedere prove strutturate riduce molto questi falsi successi.",
+      "link": "https://arxiv.org/abs/2609.35732"
+    },
+    {
+      "data": "2026-09-23",
+      "titolo": "Circa 950 agenti Claude individuano un nuovo sistema enzimatico",
+      "sintesi": "In 21 ore hanno analizzato oltre 200.000 trascrittasi inverse e segnalato un sistema simile a CRISPR, chiamato ART. Cosa faccia va ancora verificato in laboratorio.",
+      "link": "https://www.anthropic.com/news/claude-discovers-novel-enzyme-system"
+    },
+    {
+      "data": "2026-09-28",
+      "titolo": "Un agente migliora rileggendo le proprie esperienze, senza reinforcement learning",
+      "sintesi": "Il metodo ROFT addestra il modello solo su spiegazioni scritte da lui stesso delle esperienze passate, con risultati competitivi su compiti di software engineering.",
+      "link": "https://arxiv.org/abs/2609.35741"
     }
   ]
 }

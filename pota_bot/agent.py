@@ -10,7 +10,7 @@ from .guardrails import blocca_fuori_tema, guardrail
 from .tools import get_faq, get_news, get_upcoming_events, propose_topic
 
 # Il modello si sceglie con la variabile d'ambiente POTA_BOT_MODEL.
-MODEL = os.environ.get("POTA_BOT_MODEL", "gemini-flash-lite-latest")
+MODEL = os.environ.get("POTA_BOT_MODEL", "gemini-3.5-flash-lite")
 
 INSTRUCTION = """
 Sei Pota Bot, l'assistente della community GDG Brescia (Google Developer Group).
