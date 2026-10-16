@@ -41,3 +41,73 @@ def test_select_recent_keeps_a_few_undated_per_source():
     undated = [item(f"n{i}", None, source="Dev") for i in range(5)]
     chosen = select_recent(undated, now=NOW, undated_per_source=3)
     assert [i.title for i in chosen] == ["n0", "n1", "n2"]
+
+
+from pota_bot.digest import build_weekly_digest, fallback_digest, make_digest, validate_digest
+
+GOOD = "Il digest\n\n🧠 Nuovi modelli AI\n- Notizia uno. https://ex.com/uno\n\nPota!"
+
+
+def test_validate_accepts_known_links():
+    assert validate_digest(GOOD, {"https://ex.com/uno"}) == []
+
+
+def test_validate_rejects_invented_link_and_missing_link():
+    text = "- Inventata. https://falso.com/x\n- Senza fonte."
+    problems = validate_digest(text, {"https://ex.com/uno"})
+    assert len(problems) == 2
+
+
+def test_validate_requires_at_least_one_news_line():
+    assert validate_digest("Niente notizie", set()) != []
+
+
+async def test_make_digest_returns_valid_text():
+    items = [item("uno", 1)]
+
+    async def generate(prompt):
+        assert "https://ex.com/uno" in prompt
+        return "Digest\n- Uno. https://ex.com/uno"
+
+    assert await make_digest(items, generate) == "Digest\n- Uno. https://ex.com/uno"
+
+
+async def test_make_digest_retries_then_falls_back_without_ai():
+    items = [item("uno", 1)]
+    prompts = []
+
+    async def generate(prompt):
+        prompts.append(prompt)
+        return "- Inventata. https://falso.com/x"
+
+    text = await make_digest(items, generate)
+    assert len(prompts) == 2
+    assert "Problemi" in prompts[1]
+    assert text == fallback_digest(items)
+    assert "https://ex.com/uno" in text
+
+
+async def test_make_digest_with_no_items_is_empty():
+    async def generate(prompt):
+        raise AssertionError("non deve chiamare il modello")
+
+    assert await make_digest([], generate) == ""
+
+
+async def test_build_weekly_digest_skips_broken_feeds(monkeypatch):
+    def handler(request):
+        if "rotto" in str(request.url):
+            return httpx.Response(500)
+        return httpx.Response(200, text=RSS)
+
+    monkeypatch.setattr("pota_bot.digest.load_feeds", lambda: [
+        {"name": "Buono", "url": "https://ex.com/rss"},
+        {"name": "Rotto", "url": "https://rotto.com/rss"},
+    ])
+
+    async def generate(prompt):
+        return "Digest\n- Nuova. https://ex.com/nuova"
+
+    http = httpx.AsyncClient(transport=httpx.MockTransport(handler))
+    text = await build_weekly_digest(generate, http=http, now=NOW)
+    assert "https://ex.com/nuova" in text
