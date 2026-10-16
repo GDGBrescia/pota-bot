@@ -45,6 +45,7 @@ def make_bot(ask=None, limit=20):
     (message("@Pota_Test_Bot quando è il prossimo evento?")["message"], True),
     (message("e quindi?", reply_to_username=BOT)["message"], True),
     (message("e quindi?", reply_to_username="altro_bot")["message"], False),
+    (message("@pota_test_bot_2 ciao")["message"], False),
 ])
 def test_is_addressed_to_bot(msg, expected):
     assert is_addressed_to_bot(msg, BOT) is expected
@@ -100,3 +101,35 @@ async def test_updates_without_text_are_ignored():
     await bot.handle_update({"update_id": 1, "message": {"message_id": 1, "chat": {"id": 1, "type": "private"}}})
     await bot.handle_update({"update_id": 2, "edited_message": {}})
     assert telegram.sent == []
+
+
+async def test_command_for_another_bot_is_ignored():
+    bot, telegram = make_bot()
+    await bot.handle_update(message("/help@altro_bot"))
+    assert telegram.sent == []
+
+
+async def test_path_like_text_is_not_a_command():
+    ask = FakeAsk(reply="È un percorso.")
+    bot, telegram = make_bot(ask)
+    await bot.handle_update(message(f"/etc/hosts cos'è? @{BOT}"))
+    assert len(ask.questions) == 1
+    assert telegram.sent[-1][1] == "È un percorso."
+
+
+async def test_failed_send_does_not_escape_handle_update():
+    class FailingTelegram:
+        async def send_message(self, chat_id, text, reply_to_message_id=None):
+            raise RuntimeError("telegram giù")
+
+    bot = PotaBot(telegram=FailingTelegram(), ask=FakeAsk(), bot_username=BOT, limiter=RateLimiter(20))
+    await bot.handle_update(message("ciao", chat_type="private"))
+
+
+async def test_empty_question_does_not_consume_rate_limit():
+    ask = FakeAsk()
+    bot, telegram = make_bot(ask, limit=1)
+    await bot.handle_update(message(f"@{BOT}"))
+    await bot.handle_update(message(f"@{BOT} ciao"))
+    assert len(ask.questions) == 1
+    assert telegram.sent[-1][1] == "risposta"

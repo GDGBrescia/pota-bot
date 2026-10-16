@@ -2,7 +2,11 @@
 import httpx
 
 API_URL = "https://api.telegram.org"
-MAX_TEXT = 4096
+MAX_TEXT = 4000  # il limite di Telegram è 4096: lasciamo margine
+
+
+def cut(text: str) -> str:
+    return text if len(text) <= MAX_TEXT else text[:MAX_TEXT] + "…"
 
 
 class TelegramError(RuntimeError):
@@ -14,17 +18,23 @@ class TelegramClient:
         self._base = f"{API_URL}/bot{token}"
         self._http = http or httpx.AsyncClient(timeout=45)
 
+    async def aclose(self) -> None:
+        await self._http.aclose()
+
     async def _call(self, method: str, **payload):
         response = await self._http.post(f"{self._base}/{method}", json=payload)
-        data = response.json()
+        try:
+            data = response.json()
+        except ValueError:
+            raise TelegramError(f"risposta non valida da Telegram ({response.status_code})") from None
         if not data.get("ok"):
             raise TelegramError(data.get("description", f"errore Telegram {response.status_code}"))
         return data["result"]
 
     async def send_message(self, chat_id, text: str, reply_to_message_id: int | None = None):
-        payload = {"chat_id": chat_id, "text": text[:MAX_TEXT], "link_preview_options": {"is_disabled": True}}
+        payload = {"chat_id": chat_id, "text": cut(text), "link_preview_options": {"is_disabled": True}}
         if reply_to_message_id is not None:
-            payload["reply_parameters"] = {"message_id": reply_to_message_id}
+            payload["reply_parameters"] = {"message_id": reply_to_message_id, "allow_sending_without_reply": True}
         return await self._call("sendMessage", **payload)
 
     async def set_webhook(self, url: str, secret_token: str):

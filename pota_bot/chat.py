@@ -1,4 +1,7 @@
 """Fa una domanda all'agente e restituisce la risposta finale, tenendo una sessione per conversazione."""
+import asyncio
+from collections import defaultdict
+
 from google.adk import Agent
 from google.adk.runners import InMemoryRunner
 from google.genai import types
@@ -7,8 +10,14 @@ from google.genai import types
 class AgentChat:
     def __init__(self, agent: Agent, app_name: str = "pota_bot"):
         self._runner = InMemoryRunner(agent=agent, app_name=app_name)
+        self._locks: defaultdict[tuple[str, str], asyncio.Lock] = defaultdict(asyncio.Lock)
 
     async def ask(self, user_id: str, session_id: str, text: str) -> str:
+        # una sola domanda alla volta per sessione: niente messaggi che si intrecciano
+        async with self._locks[(user_id, session_id)]:
+            return await self._ask(user_id, session_id, text)
+
+    async def _ask(self, user_id: str, session_id: str, text: str) -> str:
         sessions = self._runner.session_service
         app = self._runner.app_name
         if await sessions.get_session(app_name=app, user_id=user_id, session_id=session_id) is None:

@@ -23,12 +23,12 @@ async def test_send_message_posts_expected_payload():
     assert seen["url"] == "https://api.telegram.org/botTOKEN/sendMessage"
     assert seen["body"]["chat_id"] == 42
     assert seen["body"]["text"] == "ciao"
-    assert seen["body"]["reply_parameters"] == {"message_id": 7}
+    assert seen["body"]["reply_parameters"] == {"message_id": 7, "allow_sending_without_reply": True}
     assert seen["body"]["link_preview_options"] == {"is_disabled": True}
     assert result == {"message_id": 5}
 
 
-async def test_long_text_is_cut_to_telegram_limit():
+async def test_long_text_is_cut_with_ellipsis():
     seen = {}
 
     def handler(request):
@@ -36,7 +36,8 @@ async def test_long_text_is_cut_to_telegram_limit():
         return httpx.Response(200, json={"ok": True, "result": {}})
 
     await client_with(handler).send_message(1, "x" * 5000)
-    assert len(seen["body"]["text"]) == 4096
+    assert len(seen["body"]["text"]) == 4001
+    assert seen["body"]["text"].endswith("…")
 
 
 async def test_telegram_error_is_raised_with_description():
@@ -45,3 +46,17 @@ async def test_telegram_error_is_raised_with_description():
 
     with pytest.raises(TelegramError, match="chat not found"):
         await client_with(handler).send_message(1, "ciao")
+
+
+async def test_non_json_response_raises_telegram_error():
+    def handler(request):
+        return httpx.Response(502, text="<html>Bad Gateway</html>")
+
+    with pytest.raises(TelegramError, match="risposta non valida da Telegram \\(502\\)"):
+        await client_with(handler).send_message(1, "ciao")
+
+
+async def test_aclose_closes_http_client():
+    http = httpx.AsyncClient(transport=httpx.MockTransport(lambda r: httpx.Response(200, json={"ok": True, "result": {}})))
+    await TelegramClient("TOKEN", http=http).aclose()
+    assert http.is_closed

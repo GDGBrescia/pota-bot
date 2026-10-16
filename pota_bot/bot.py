@@ -28,11 +28,22 @@ EMPTY_TEXT = "Dimmi pure! Chiedimi degli eventi, delle FAQ o delle novità su AI
 COMMANDS = {"/start": HELP_TEXT, "/help": HELP_TEXT, "/privacy": PRIVACY_TEXT}
 
 
-def command_of(text: str) -> str | None:
-    """"/privacy@pota_bot ciao" → "/privacy"; testo normale → None."""
-    if not text.startswith("/"):
+COMMAND_RE = re.compile(r"^/([A-Za-z0-9_]+)(?:@(\w+))?(?:\s|$)")
+
+
+def mention_re(bot_username: str) -> re.Pattern:
+    return re.compile(rf"@{re.escape(bot_username)}(?!\w)", re.IGNORECASE)
+
+
+def command_of(text: str, bot_username: str) -> str | None:
+    """"/privacy@pota_bot ciao" → "/privacy". None se non è un comando o è rivolto a un altro bot."""
+    match = COMMAND_RE.match(text)
+    if not match:
         return None
-    return text.split()[0].split("@")[0].lower()
+    target = match.group(2)
+    if target is not None and target.lower() != bot_username.lower():
+        return None
+    return "/" + match.group(1).lower()
 
 
 def is_addressed_to_bot(message: dict, bot_username: str) -> bool:
@@ -41,11 +52,11 @@ def is_addressed_to_bot(message: dict, bot_username: str) -> bool:
     replied_to = (message.get("reply_to_message") or {}).get("from") or {}
     if replied_to.get("username", "").lower() == bot_username.lower():
         return True
-    return f"@{bot_username.lower()}" in (message.get("text") or "").lower()
+    return mention_re(bot_username).search(message.get("text") or "") is not None
 
 
 def clean_text(text: str, bot_username: str) -> str:
-    return re.sub(rf"@{re.escape(bot_username)}\b", "", text, flags=re.IGNORECASE).strip()
+    return mention_re(bot_username).sub("", text).strip()
 
 
 class PotaBot:
@@ -64,21 +75,21 @@ class PotaBot:
         reply_to = message.get("message_id")
         text = message["text"]
 
-        command = command_of(text)
+        command = command_of(text, self.bot_username)
         if command is not None:
             if command in COMMANDS:
-                await self.telegram.send_message(chat_id, COMMANDS[command], reply_to_message_id=reply_to)
+                await self._reply(chat_id, COMMANDS[command], reply_to)
             return
 
         if not is_addressed_to_bot(message, self.bot_username):
             return
-        if not self.limiter.allow(user_id):
-            await self.telegram.send_message(chat_id, RATE_LIMIT_TEXT, reply_to_message_id=reply_to)
-            return
 
         question = clean_text(text, self.bot_username)
         if not question:
-            await self.telegram.send_message(chat_id, EMPTY_TEXT, reply_to_message_id=reply_to)
+            await self._reply(chat_id, EMPTY_TEXT, reply_to)
+            return
+        if not self.limiter.allow(user_id):
+            await self._reply(chat_id, RATE_LIMIT_TEXT, reply_to)
             return
 
         try:
@@ -86,4 +97,11 @@ class PotaBot:
         except Exception:
             logger.exception("Errore dell'agente sul messaggio %s", reply_to)
             reply = ERROR_TEXT
-        await self.telegram.send_message(chat_id, reply or ERROR_TEXT, reply_to_message_id=reply_to)
+        await self._reply(chat_id, reply or ERROR_TEXT, reply_to)
+
+    async def _reply(self, chat_id, text: str, reply_to) -> None:
+        """Un invio fallito non deve mai uscire da handle_update: il webhook risponderebbe 500 e Telegram riproverebbe."""
+        try:
+            await self.telegram.send_message(chat_id, text, reply_to_message_id=reply_to)
+        except Exception:
+            logger.exception("Invio a Telegram fallito (chat %s)", chat_id)

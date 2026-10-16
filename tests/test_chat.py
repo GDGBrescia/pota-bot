@@ -19,3 +19,12 @@ async def test_same_session_is_reused():
     chat = AgentChat(build_agent(MemoryProposalStore(), model=llm))
     await chat.ask("1", "chat:1", "ciao")
     assert await chat.ask("1", "chat:1", "ciao di nuovo") == "Ancora ciao!"
+
+
+async def test_concurrent_asks_on_same_session_both_complete():
+    import asyncio
+
+    llm = ScriptedLlm(script=[("text", "uno"), ("text", "due")])
+    chat = AgentChat(build_agent(MemoryProposalStore(), model=llm))
+    replies = await asyncio.gather(chat.ask("1", "chat:1", "a"), chat.ask("1", "chat:1", "b"))
+    assert sorted(replies) == ["due", "uno"]
