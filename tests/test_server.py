@@ -61,3 +61,30 @@ def test_empty_secret_in_config_rejects_everything():
     client = TestClient(create_app(bot, replace(SETTINGS, telegram_webhook_secret=""), digest_job))
     r = client.post("/telegram/webhook", json={}, headers={"X-Telegram-Bot-Api-Secret-Token": ""})
     assert r.status_code == 403
+
+
+def test_non_ascii_secret_header_gets_403_not_500():
+    client, bot, _ = make_client()
+    r = client.post("/telegram/webhook", json={}, headers={"X-Telegram-Bot-Api-Secret-Token": "è".encode("latin-1")})
+    assert r.status_code == 403 and bot.updates == []
+
+
+def test_webhook_with_invalid_json_still_returns_200():
+    client, bot, _ = make_client()
+    r = client.post("/telegram/webhook", content=b"non json",
+                    headers={"X-Telegram-Bot-Api-Secret-Token": "segreto"})
+    assert r.status_code == 200 and bot.updates == []
+
+
+def test_webhook_returns_200_even_if_bot_raises():
+    class BrokenBot:
+        async def handle_update(self, update):
+            raise RuntimeError("boom")
+
+    async def digest_job():
+        return ""
+
+    client = TestClient(create_app(BrokenBot(), SETTINGS, digest_job))
+    r = client.post("/telegram/webhook", json={"update_id": 1},
+                    headers={"X-Telegram-Bot-Api-Secret-Token": "segreto"})
+    assert r.status_code == 200

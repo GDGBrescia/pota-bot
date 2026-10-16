@@ -1,4 +1,6 @@
 """Collega i pezzi veri. Avvio: uvicorn server.production:app"""
+import logging
+
 from pota_bot.agent import build_agent
 from pota_bot.bot import PotaBot
 from pota_bot.chat import AgentChat
@@ -10,6 +12,8 @@ from pota_bot.telegram import TelegramClient
 from server.main import create_app
 
 settings = Settings.from_env()
+if not settings.telegram_webhook_secret or not settings.task_token:
+    logging.warning("TELEGRAM_WEBHOOK_SECRET o POTA_TASK_TOKEN vuoto: tutte le richieste riceveranno 403")
 store = FirestoreProposalStore() if settings.use_firestore else MemoryProposalStore()
 telegram = TelegramClient(settings.telegram_bot_token)
 bot = PotaBot(

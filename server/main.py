@@ -8,10 +8,11 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from pota_bot.config import Settings
 
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 def _same_secret(given: str | None, expected: str) -> bool:
-    return bool(expected) and secrets.compare_digest(given or "", expected)
+    return bool(expected) and secrets.compare_digest((given or "").encode(), expected.encode())
 
 
 def create_app(bot, settings: Settings, digest_job: Callable[[], Awaitable[str]]) -> FastAPI:
@@ -27,7 +28,11 @@ def create_app(bot, settings: Settings, digest_job: Callable[[], Awaitable[str]]
         if not _same_secret(x_telegram_bot_api_secret_token, settings.telegram_webhook_secret):
             raise HTTPException(status_code=403)
         # La risposta si genera PRIMA di restituire 200: su Cloud Run, dopo la risposta la CPU viene ridotta.
-        await bot.handle_update(await request.json())
+        # Se qualcosa va storto rispondiamo comunque 200: con un errore Telegram rimanderebbe lo stesso update all'infinito.
+        try:
+            await bot.handle_update(await request.json())
+        except Exception:
+            logger.exception("Errore nella gestione dell'update Telegram")
         return {"ok": True}
 
     @app.post("/tasks/digest")
