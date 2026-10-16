@@ -162,8 +162,8 @@ async def make_digest(items: list[FeedItem], generate: Generate) -> str:
     return text
 
 
-async def build_weekly_digest(generate: Generate, http: httpx.AsyncClient | None = None,
-                              now: datetime | None = None) -> str:
+async def fetch_recent_items(http: httpx.AsyncClient | None = None, now: datetime | None = None) -> list[FeedItem]:
+    """Scarica tutti i feed e restituisce le notizie recenti. Un feed che non risponde viene saltato."""
     owns_client = http is None
     http = http or httpx.AsyncClient(timeout=30, headers={"User-Agent": "PotaBot/1.0 (+github.com/GDGBrescia/pota-bot)"})
     now = now or datetime.now(timezone.utc)
@@ -179,7 +179,12 @@ async def build_weekly_digest(generate: Generate, http: httpx.AsyncClient | None
             logger.warning("Feed %s non disponibile: %s", feed["name"], result)
         else:
             items += result
-    return await make_digest(select_recent(items, now=now), generate)
+    return select_recent(items, now=now)
+
+
+async def build_weekly_digest(generate: Generate, http: httpx.AsyncClient | None = None,
+                              now: datetime | None = None) -> str:
+    return await make_digest(await fetch_recent_items(http, now), generate)
 
 
 async def gemini_generate(prompt: str) -> str:

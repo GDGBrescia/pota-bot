@@ -5,13 +5,14 @@ ADK cerca `root_agent` in questo file: `adk web` e `adk run pota_bot` lo trovano
 import os
 
 from google.adk import Agent
+from google.adk.agents.readonly_context import ReadonlyContext
 from google.adk.models.base_llm import BaseLlm
 from google.adk.models.google_llm import Gemini
 from google.genai import types
 
 from .guardrails import blocca_fuori_tema, guardrail
 from .storage import MemoryProposalStore, ProposalStore
-from .tools import get_faq, get_news, get_upcoming_events, make_propose_topic
+from .tools import get_faq, get_news, get_upcoming_events, make_propose_topic, today
 
 # Il modello si sceglie con la variabile d'ambiente POTA_BOT_MODEL.
 MODEL = os.environ.get("POTA_BOT_MODEL", "gemini-3.5-flash-lite")
@@ -35,6 +36,11 @@ Regole:
 """
 
 
+def instruction_for_today(context: ReadonlyContext) -> str:
+    """Le istruzioni con la data di oggi: il modello da solo non sa che giorno è."""
+    return f"{INSTRUCTION}\nOggi è {today():%d/%m/%Y}."
+
+
 def build_agent(store: ProposalStore, model: str | BaseLlm = MODEL) -> Agent:
     """Costruisce l'agente. Lo store decide dove finiscono le proposte di temi."""
     if isinstance(model, str):
@@ -42,7 +48,7 @@ def build_agent(store: ProposalStore, model: str | BaseLlm = MODEL) -> Agent:
     return Agent(
         name="pota_bot",
         model=model,
-        instruction=INSTRUCTION,
+        instruction=instruction_for_today,
         tools=[get_upcoming_events, get_faq, get_news, make_propose_topic(store)],
         before_tool_callback=guardrail,
         before_model_callback=blocca_fuori_tema,
