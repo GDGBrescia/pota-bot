@@ -8,7 +8,7 @@ Portare Pota Bot (l'agente costruito al workshop del 1/10/2026) in un gruppo Tel
 
 ## Cosa fa
 
-1. **Chat nel gruppo.** Risponde quando lo menzioni (`@username`) o rispondi a un suo messaggio; in privato risponde sempre. Strumenti del workshop: eventi, FAQ, news, proposte di temi. Comandi: `/start`, `/help`, `/privacy`.
+1. **Chat nel gruppo.** Nei gruppi risponde a `/chiedi <domanda>` o quando rispondi a un suo messaggio (le menzioni `@username` solo con la privacy mode disattivata); in privato risponde sempre. Strumenti del workshop: eventi, FAQ, news, proposte di temi. Comandi: `/chiedi`, `/start`, `/help`, `/privacy`.
 2. **Digest settimanale.** Ogni lunedì alle 9:00 (Europe/Rome) pubblica nel gruppo le novità della settimana, prese da **feed RSS scelti da noi** (`pota_bot/data/feeds.json`), divise nelle categorie del sondaggio della community.
 3. **Proposte di temi salvate** in Firestore (senza nome né id di chi propone).
 
@@ -29,6 +29,7 @@ Segreti (Secret Manager): token Telegram, chiave Gemini, segreto webhook, token 
 |---|---|---|
 | Modello | `gemini-3.5-flash-lite` via **API key Gemini** (AI Studio) | Free tier per sviluppo e test; per il gruppo vero serve una chiave a pagamento (i termini Gemini ammettono solo servizi a pagamento per utenti nello Spazio economico europeo). Cambia solo il segreto |
 | Fonti del digest | Feed RSS, niente Google Search | Google Search non è nel free tier; le fonti le controlliamo noi; ogni notizia ha il link per costruzione |
+| Privacy mode di Telegram | Attiva (default); nei gruppi si usa /chiedi o la risposta a un messaggio del bot; le menzioni solo con privacy disattivata | Il bot non riceve i messaggi della chat che non lo riguardano |
 | Ricezione messaggi | Webhook (produzione), polling (solo locale) | Cloud Run scala a zero tra un messaggio e l'altro |
 | Lavoro nella richiesta | La risposta si genera **prima** di restituire 200 a Telegram | Su Cloud Run la CPU viene ridotta dopo la risposta: un task in background potrebbe non finire |
 | Istanze | `--max-instances 1` | Il limite di messaggi per persona sta in memoria; tetto ai costi |

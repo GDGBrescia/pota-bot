@@ -18,14 +18,15 @@ Runbook per portare Pota Bot su Google Cloud dal vivo, con `./deploy/deploy.sh`.
 - [ ] **Docker non serve**: la build la fa Cloud Build, sul cloud.
 - [ ] **Bot di test** creato con [@BotFather](https://t.me/BotFather) (`/newbot`): servono token e username.
 - [ ] **Gruppo di test** su Telegram, con il bot aggiunto.
+- [ ] **Privacy mode di Telegram** (attiva di default): nei gruppi il bot vede solo `/chiedi ...` (e gli altri comandi) e le risposte ai suoi messaggi, non le menzioni semplici `@username`. Per rispondere anche alle menzioni: @BotFather → `/setprivacy` → Disable, poi togli e riaggiungi il bot al gruppo (da quel momento riceve tutti i messaggi del gruppo, ma ignora, e non manda mai a Gemini, quelli che non lo riguardano). Per il gruppo della community consigliamo di lasciarla attiva.
 - [ ] **Chiave API Gemini** da [AI Studio](https://aistudio.google.com/apikey) (per il test va bene quella gratuita).
 - [ ] `deploy/config.env` creato: `cp deploy/config.env.example deploy/config.env` e compilato (`PROJECT_ID`, `TELEGRAM_BOT_USERNAME` senza `@`, `TELEGRAM_DIGEST_CHAT_ID`).
 
 ### Come trovare l'id del gruppo di test
 
-1. Metti token e username in `pota_bot/.env` (vedi `.env.example`).
+1. Copia `.env.example` (nella radice del repo) in `pota_bot/.env` e inserisci chiave Gemini, token e username del bot.
 2. Avvia il bot in locale: `.venv/bin/python scripts/run_polling.py`
-3. Scrivi un messaggio nel gruppo di test.
+3. Nel gruppo di test scrivi `/start@username_del_bot` (con la privacy mode un messaggio normale non arriva al bot).
 4. Nel log compare una riga tipo `📨 chat -1001234567890 (supergroup): ...`. Quel **numero negativo** è `TELEGRAM_DIGEST_CHAT_ID`.
 5. Ferma lo script con Ctrl+C.
 
@@ -90,25 +91,29 @@ A fine script compare `✅ Pota Bot è online: <URL>`.
 
 ## 3. Demo dopo il deploy
 
-Nel gruppo di test, nominando il bot (`@username ...`), in quest'ordine:
+Prima di tutto: `source deploy/config.env` nel terminale, così `$PROJECT_ID`, `$REGION` e `$SCHEDULER_REGION` sono definiti per i comandi `gcloud` di questa guida.
 
-1. **Evento:** "Quando è il prossimo evento?"
-2. **FAQ:** una domanda sulla community (es. "Chi può partecipare?").
-3. **News:** "Novità su AI e Google questa settimana?"
-4. **Proposta valida:** proponi un tema → Console → Firestore → `proposals` mostra il documento.
-5. **Proposta con dato personale** (una email): il guardrail la blocca.
-6. **Fuori tema** (ricetta, politica...): il bot rifiuta.
+Nel gruppo di test scrivi `/chiedi <domanda>`. Il secondo modo è rispondere a un messaggio del bot, senza comando. Le menzioni `@username` funzionano solo con la privacy mode disattivata. In quest'ordine:
+
+1. **Evento:** `/chiedi Quando è il prossimo evento?`
+2. **FAQ:** `/chiedi` con una domanda sulla community (es. "Chi può partecipare?").
+3. **News:** `/chiedi Novità su AI e Google questa settimana?`
+4. **Proposta valida:** `/chiedi Vorrei proporre un tema: ...`, oppure rispondi al messaggio del bot → Console → Firestore → `proposals` mostra il documento.
+5. **Proposta con dato personale** (una email, sempre con `/chiedi` o in risposta al bot): il guardrail la blocca.
+6. **Fuori tema** (`/chiedi` con una ricetta, politica...): il bot rifiuta.
 7. **Digest a mano:**
    ```bash
-   gcloud --project=$PROJECT_ID scheduler jobs run pota-bot-digest --location europe-west1
+   gcloud --project=$PROJECT_ID scheduler jobs run pota-bot-digest --location $SCHEDULER_REGION
    ```
    Il digest arriva nel gruppo.
 8. **Log** (facoltativo): 
    ```bash
-   gcloud --project=$PROJECT_ID run services logs read pota-bot --region europe-west8 --limit 50
+   gcloud --project=$PROJECT_ID run services logs read pota-bot --region $REGION --limit 50
    ```
 
 ## 4. Piano B e problemi noti
+
+I comandi `gcloud` di questa sezione usano le variabili di `deploy/config.env`: se hai aperto un terminale nuovo, rilancia `source deploy/config.env`.
 
 ### Il build è lento
 Mostra un servizio già deployato in un secondo progetto, o una registrazione. Intanto spiega i passi 6 e 7.
@@ -150,6 +155,8 @@ Il servizio legge `latest` quando parte, quindi serve un nuovo deploy (o una nuo
 
 ## 5. Passare al gruppo vero
 
+(Anche qui: `source deploy/config.env` per avere `$PROJECT_ID`.)
+
 > **Chiave Gemini a pagamento: obbligatoria.** I [termini dell'API Gemini](https://ai.google.dev/gemini-api/terms) ammettono solo servizi a pagamento quando l'applicazione è disponibile a utenti nello Spazio economico europeo. Inoltre, con il free tier Google può usare i messaggi per migliorare i suoi prodotti. Il gruppo vero non può usare una chiave gratuita.
 
 1. **Chiave a pagamento:** crea una chiave da un progetto con fatturazione attiva (AI Studio → chiave → collega al progetto fatturabile) e verifica che sia sul tier a pagamento.
@@ -158,7 +165,11 @@ Il servizio legge `latest` quando parte, quindi serve un nuovo deploy (o una nuo
    printf '%s' "NUOVA_CHIAVE" | gcloud --project=$PROJECT_ID secrets versions add pota-gemini-key --data-file=-
    ```
 3. **Budget alert** (es. 5 €) sul progetto: Console → Fatturazione → Budget e avvisi. Controlla che sia attivo.
-4. **Nuovo `TELEGRAM_DIGEST_CHAT_ID`** in `deploy/config.env` (stessa procedura della sezione Prerequisiti, con il gruppo vero).
+4. **Nuovo `TELEGRAM_DIGEST_CHAT_ID`** in `deploy/config.env` (stessa procedura della sezione Prerequisiti, con il gruppo vero e `/start@username_del_bot`). Attenzione: `run_polling.py` **rimuove il webhook**, quindi la produzione resta offline finché non rilanci `./deploy/deploy.sh`, e usa la chiave locale di `pota_bot/.env`. Usalo solo per leggere l'id, poi rilancia subito `./deploy/deploy.sh` (passo 6).
 5. **Bot nel gruppo vero:** aggiungilo; se usi un bot diverso da quello di test, aggiorna anche `TELEGRAM_BOT_USERNAME` e il segreto `pota-telegram-token`.
 6. **Rilancia il deploy:** `./deploy/deploy.sh`. Aggiorna servizio, webhook e job.
 7. **Verifica:** una domanda nel gruppo, `scheduler jobs run` per il digest, controllo dei log.
+
+## Dopo il webinar: smontare tutto
+
+`./deploy/teardown.sh` rimuove webhook, job e servizio. Le immagini del container restano in Artifact Registry (repository `cloud-run-source-deploy`) e costano pochi centesimi: se vuoi, eliminale dalla console (Artifact Registry).

@@ -54,9 +54,10 @@ adk web                            # interfaccia web su http://localhost:8000
 
 ## Su Telegram e in produzione
 
-Su Telegram il bot risponde nei gruppi quando lo menzioni (`@username`) o rispondi a un suo messaggio, e sempre in privato. Ogni lunedì alle 9:00 pubblica un **digest settimanale** delle novità prese da feed RSS scelti da noi. Il comando `/privacy` spiega come usa i messaggi.
+Su Telegram nei gruppi il bot risponde a `/chiedi <domanda>` o quando rispondi a un suo messaggio (le menzioni `@username` solo con la privacy mode di Telegram disattivata), e sempre in privato. Ogni lunedì alle 9:00 pubblica un **digest settimanale** delle novità prese da feed RSS scelti da noi. Il comando `/privacy` spiega come usa i messaggi.
 
 ```bash
+pip install -r requirements-dev.txt        # una tantum, con il venv attivo
 .venv/bin/python scripts/run_polling.py   # il bot su Telegram dal tuo computer, senza cloud
 ./deploy/deploy.sh                        # il deploy su Google Cloud (Cloud Run)
 ```
@@ -71,7 +72,7 @@ Su Telegram il bot risponde nei gruppi quando lo menzioni (`@username`) o rispon
 - [x] Workshop: agente con strumenti, stato e guardrail
 - [x] Digest settimanale di notizie nel gruppo Telegram della community (nel codice; in prova sul gruppo di test)
 - [x] Deploy (Cloud Run + webhook Telegram) (nel codice; in prova sul gruppo di test)
-- [ ] Test automatici per strumenti e guardrail
+- [x] Test automatici per strumenti e guardrail
 
 Le prossime cose da fare sono nelle [issue](../../issues), a partire da quelle con l'etichetta `good first issue`.
 
