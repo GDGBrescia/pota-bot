@@ -28,7 +28,7 @@ create_secret() { printf '%s' "$2" | $G secrets create "$1" --data-file=- --repl
 ask_secret() {  # nome, variabile d'ambiente, domanda
   secret_exists "$1" && return
   local value="${!2:-}"
-  if [ -z "$value" ]; then read -r -s -p "$3: " value; echo; fi
+  if [ -z "$value" ]; then read -r -s -p "$3: " value || true; echo; fi
   [ -n "$value" ] || { echo "Valore vuoto per $1" >&2; exit 1; }
   create_secret "$1" "$value"
 }
