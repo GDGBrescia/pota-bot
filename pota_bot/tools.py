@@ -8,6 +8,8 @@ from typing import Literal
 
 from google.adk.tools import ToolContext
 
+from .storage import Proposal, ProposalStore
+
 DATA_DIR = Path(__file__).parent / "data"
 
 
@@ -52,15 +54,21 @@ def get_news(category: Category) -> dict:
     return {"category": category, "news": NEWS[category]}
 
 
-def propose_topic(title: str, reason: str, tool_context: ToolContext) -> dict:
-    """Registra una proposta di tema per un prossimo evento di GDG Brescia.
+def make_propose_topic(store: ProposalStore):
+    """Crea lo strumento propose_topic collegato allo store dove salvare le proposte."""
 
-    Args:
-        title: il tema proposto, in poche parole.
-        reason: perché interessa alla community.
-    """
-    proposals = tool_context.state.get("proposals", [])
-    proposals.append({"title": title, "reason": reason})
-    tool_context.state["proposals"] = proposals
-    tool_context.state["proposals_count"] = len(proposals)
-    return {"status": "salvata", "totale_proposte": len(proposals)}
+    def propose_topic(title: str, reason: str, tool_context: ToolContext) -> dict:
+        """Registra una proposta di tema per un prossimo evento di GDG Brescia.
+
+        Args:
+            title: il tema proposto, in poche parole.
+            reason: perché interessa alla community.
+        """
+        proposals = tool_context.state.get("proposals", [])
+        proposals.append({"title": title, "reason": reason})
+        tool_context.state["proposals"] = proposals
+        tool_context.state["proposals_count"] = len(proposals)
+        store.add(Proposal(title=title, reason=reason))
+        return {"status": "salvata", "totale_proposte": len(proposals)}
+
+    return propose_topic
