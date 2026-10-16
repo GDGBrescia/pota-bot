@@ -2,6 +2,7 @@
 
 Il modello legge nome, docstring e tipi di ogni funzione per capire quando usarla.
 """
+import asyncio
 import json
 from pathlib import Path
 from typing import Literal
@@ -57,18 +58,18 @@ def get_news(category: Category) -> dict:
 def make_propose_topic(store: ProposalStore):
     """Crea lo strumento propose_topic collegato allo store dove salvare le proposte."""
 
-    def propose_topic(title: str, reason: str, tool_context: ToolContext) -> dict:
+    async def propose_topic(title: str, reason: str, tool_context: ToolContext) -> dict:
         """Registra una proposta di tema per un prossimo evento di GDG Brescia.
 
         Args:
             title: il tema proposto, in poche parole.
             reason: perché interessa alla community.
         """
-        proposals = tool_context.state.get("proposals", [])
-        proposals.append({"title": title, "reason": reason})
-        tool_context.state["proposals"] = proposals
-        tool_context.state["proposals_count"] = len(proposals)
-        store.add(Proposal(title=title, reason=reason))
-        return {"status": "salvata", "totale_proposte": len(proposals)}
+        # Prima si salva, poi si aggiorna lo stato: se il salvataggio fallisce
+        # la persona non perde una delle sue proposte. In un thread per non bloccare il server.
+        await asyncio.to_thread(store.add, Proposal(title=title, reason=reason))
+        count = tool_context.state.get("proposals_count", 0) + 1
+        tool_context.state["proposals_count"] = count
+        return {"status": "salvata", "totale_proposte": count}
 
     return propose_topic

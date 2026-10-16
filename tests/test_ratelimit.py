@@ -1,3 +1,5 @@
+import pytest
+
 from pota_bot.ratelimit import RateLimiter
 
 
@@ -31,3 +33,8 @@ def test_window_slides_after_one_hour():
     assert not limiter.allow("anna")
     clock.now = 3600
     assert limiter.allow("anna")
+
+
+def test_rejects_limit_below_one():
+    with pytest.raises(ValueError):
+        RateLimiter(max_per_hour=0)

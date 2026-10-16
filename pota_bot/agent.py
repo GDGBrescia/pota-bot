@@ -5,6 +5,7 @@ ADK cerca `root_agent` in questo file: `adk web` e `adk run pota_bot` lo trovano
 import os
 
 from google.adk import Agent
+from google.adk.models.base_llm import BaseLlm
 
 from .guardrails import blocca_fuori_tema, guardrail
 from .storage import MemoryProposalStore, ProposalStore
@@ -26,7 +27,7 @@ Regole:
 """
 
 
-def build_agent(store: ProposalStore, model=MODEL) -> Agent:
+def build_agent(store: ProposalStore, model: str | BaseLlm = MODEL) -> Agent:
     """Costruisce l'agente. Lo store decide dove finiscono le proposte di temi."""
     return Agent(
         name="pota_bot",
@@ -38,4 +39,5 @@ def build_agent(store: ProposalStore, model=MODEL) -> Agent:
     )
 
 
+# Store in memoria: serve solo a `adk web`/`adk run` in locale; in produzione si costruisce un agente con Firestore.
 root_agent = build_agent(MemoryProposalStore())

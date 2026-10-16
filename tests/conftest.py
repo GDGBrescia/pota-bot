@@ -20,6 +20,8 @@ class ScriptedLlm(BaseLlm):
 
     async def generate_content_async(self, llm_request, stream=False) -> AsyncGenerator[LlmResponse, None]:
         self.calls += 1
+        if not self.script:
+            raise AssertionError("ScriptedLlm: copione finito, il modello è stato chiamato più volte del previsto")
         kind, payload = self.script.pop(0)
         if kind == "call":
             name, args = payload
