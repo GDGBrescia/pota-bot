@@ -6,6 +6,8 @@ import os
 
 from google.adk import Agent
 from google.adk.models.base_llm import BaseLlm
+from google.adk.models.google_llm import Gemini
+from google.genai import types
 
 from .guardrails import blocca_fuori_tema, guardrail
 from .storage import MemoryProposalStore, ProposalStore
@@ -13,6 +15,12 @@ from .tools import get_faq, get_news, get_upcoming_events, make_propose_topic
 
 # Il modello si sceglie con la variabile d'ambiente POTA_BOT_MODEL.
 MODEL = os.environ.get("POTA_BOT_MODEL", "gemini-3.5-flash-lite")
+
+# Se Gemini è momentaneamente sovraccarico (500/503/504) riproviamo da soli, con attese crescenti.
+# Il 429 (quota finita) no: riprovare consumerebbe altra quota.
+RETRY_OPTIONS = types.HttpRetryOptions(
+    attempts=4, initial_delay=1.0, max_delay=8.0, http_status_codes=[500, 503, 504]
+)
 
 INSTRUCTION = """
 Sei Pota Bot, l'assistente della community GDG Brescia (Google Developer Group).
@@ -29,6 +37,8 @@ Regole:
 
 def build_agent(store: ProposalStore, model: str | BaseLlm = MODEL) -> Agent:
     """Costruisce l'agente. Lo store decide dove finiscono le proposte di temi."""
+    if isinstance(model, str):
+        model = Gemini(model=model, retry_options=RETRY_OPTIONS)
     return Agent(
         name="pota_bot",
         model=model,

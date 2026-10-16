@@ -186,7 +186,10 @@ async def gemini_generate(prompt: str) -> str:
     """Il vero generatore: Gemini via API key (variabile GOOGLE_API_KEY)."""
     from google import genai
 
-    from .agent import MODEL
+    from google.genai import types
 
-    response = await genai.Client().aio.models.generate_content(model=MODEL, contents=prompt)
+    from .agent import MODEL, RETRY_OPTIONS
+
+    client = genai.Client(http_options=types.HttpOptions(retry_options=RETRY_OPTIONS))
+    response = await client.aio.models.generate_content(model=MODEL, contents=prompt)
     return response.text or ""
