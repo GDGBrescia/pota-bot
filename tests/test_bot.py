@@ -1,6 +1,6 @@
 import pytest
 
-from pota_bot.bot import ERROR_TEXT, PRIVACY_TEXT, RATE_LIMIT_TEXT, PotaBot, clean_text, is_addressed_to_bot
+from pota_bot.bot import EMPTY_TEXT, ERROR_TEXT, PRIVACY_TEXT, RATE_LIMIT_TEXT, PotaBot, clean_text, is_addressed_to_bot
 from pota_bot.ratelimit import RateLimiter
 
 BOT = "pota_test_bot"
@@ -133,3 +133,60 @@ async def test_empty_question_does_not_consume_rate_limit():
     await bot.handle_update(message(f"@{BOT} ciao"))
     assert len(ask.questions) == 1
     assert telegram.sent[-1][1] == "risposta"
+
+
+async def test_chiedi_in_group_asks_with_cleaned_question():
+    ask = FakeAsk(reply="Il 12 novembre!")
+    bot, telegram = make_bot(ask)
+    await bot.handle_update(message("/chiedi quando è il prossimo evento?"))
+    assert ask.questions == [("10", "-100:10", "quando è il prossimo evento?")]
+    assert telegram.sent == [(-100, "Il 12 novembre!", 99)]
+
+
+async def test_chiedi_with_our_bot_suffix_is_answered():
+    ask = FakeAsk()
+    bot, telegram = make_bot(ask)
+    await bot.handle_update(message(f"/chiedi@{BOT} domanda"))
+    assert ask.questions == [("10", "-100:10", "domanda")]
+    assert telegram.sent[-1][1] == "risposta"
+
+
+async def test_chiedi_for_another_bot_is_ignored():
+    ask = FakeAsk()
+    bot, telegram = make_bot(ask)
+    await bot.handle_update(message("/chiedi@altro_bot domanda"))
+    assert ask.questions == []
+    assert telegram.sent == []
+
+
+async def test_chiedi_works_in_private_chat():
+    ask = FakeAsk()
+    bot, telegram = make_bot(ask)
+    await bot.handle_update(message("/chiedi ciao", chat_type="private"))
+    assert ask.questions == [("10", "-100:10", "ciao")]
+
+
+async def test_chiedi_without_question_gets_empty_text_and_keeps_rate_limit():
+    ask = FakeAsk()
+    bot, telegram = make_bot(ask, limit=1)
+    await bot.handle_update(message("/chiedi"))
+    await bot.handle_update(message(f"/chiedi@{BOT}   "))
+    assert ask.questions == []
+    assert [s[1] for s in telegram.sent] == [EMPTY_TEXT, EMPTY_TEXT]
+    await bot.handle_update(message("/chiedi ora sì"))
+    assert len(ask.questions) == 1
+
+
+async def test_chiedi_is_rate_limited():
+    ask = FakeAsk()
+    bot, telegram = make_bot(ask, limit=1)
+    await bot.handle_update(message("/chiedi uno"))
+    await bot.handle_update(message("/chiedi due"))
+    assert len(ask.questions) == 1
+    assert telegram.sent[-1][1] == RATE_LIMIT_TEXT
+
+
+async def test_chiedi_agent_error_becomes_friendly_message():
+    bot, telegram = make_bot(FakeAsk(error=RuntimeError("quota")))
+    await bot.handle_update(message("/chiedi ciao"))
+    assert telegram.sent[-1][1] == ERROR_TEXT

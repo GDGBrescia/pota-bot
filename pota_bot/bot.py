@@ -11,8 +11,8 @@ Ask = Callable[[str, str, str], Awaitable[str]]
 
 HELP_TEXT = (
     "Pota! Sono Pota Bot, il bot di GDG Brescia.\n"
-    "Nei gruppi menzionami o rispondi a un mio messaggio: chiedimi degli eventi, delle FAQ, "
-    "delle novità su AI e Google, o proponi un tema per i prossimi eventi.\n"
+    "Nei gruppi scrivi /chiedi seguito dalla domanda, oppure rispondi a un mio messaggio.\n"
+    "Chiedimi degli eventi, delle FAQ, delle novità su AI e Google, o proponi un tema per i prossimi eventi.\n"
     "/privacy per sapere come uso i messaggi."
 )
 PRIVACY_TEXT = (
@@ -25,6 +25,7 @@ RATE_LIMIT_TEXT = "Pota, per quest'ora hai già fatto tante domande! Riprova pi�
 ERROR_TEXT = "Pota, qualcosa è andato storto. Riprova tra un minuto."
 EMPTY_TEXT = "Dimmi pure! Chiedimi degli eventi, delle FAQ o delle novità su AI e Google."
 
+ASK_COMMAND = "/chiedi"
 COMMANDS = {"/start": HELP_TEXT, "/help": HELP_TEXT, "/privacy": PRIVACY_TEXT}
 
 
@@ -76,15 +77,18 @@ class PotaBot:
         text = message["text"]
 
         command = command_of(text, self.bot_username)
-        if command is not None:
+        if command == ASK_COMMAND:
+            # Con la privacy mode di Telegram i comandi arrivano sempre: è il modo affidabile di chiamare il bot nei gruppi.
+            question = clean_text(text[COMMAND_RE.match(text).end():], self.bot_username)
+        elif command is not None:
             if command in COMMANDS:
                 await self._reply(chat_id, COMMANDS[command], reply_to)
             return
-
-        if not is_addressed_to_bot(message, self.bot_username):
+        elif not is_addressed_to_bot(message, self.bot_username):
             return
+        else:
+            question = clean_text(text, self.bot_username)
 
-        question = clean_text(text, self.bot_username)
         if not question:
             await self._reply(chat_id, EMPTY_TEXT, reply_to)
             return
