@@ -5,3 +5,4 @@ __pycache__/
 .adk/
 .ipynb_checkpoints/
 .DS_Store
+deploy/config.env

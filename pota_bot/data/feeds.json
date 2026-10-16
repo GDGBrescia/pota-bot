@@ -1,0 +1,8 @@
+[
+  {"name": "Google Blog · AI", "url": "https://blog.google/technology/ai/rss/"},
+  {"name": "Google Developers Blog", "url": "https://developers.googleblog.com/rss/"},
+  {"name": "Google Cloud Blog", "url": "https://cloudblog.withgoogle.com/rss/"},
+  {"name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml"},
+  {"name": "Hugging Face", "url": "https://huggingface.co/blog/feed.xml"},
+  {"name": "TechCrunch · AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/"}
+]

@@ -31,6 +31,11 @@ pota_bot/             lo stesso bot, organizzato in file
   tools.py            gli strumenti: eventi, FAQ, notizie, proposte
   guardrails.py       le regole nel codice
   data/               eventi, FAQ e notizie in JSON
+server/               il servizio web per Telegram (webhook e digest)
+scripts/              run_polling.py: il bot su Telegram dal tuo computer
+deploy/               deploy.sh e teardown.sh per Google Cloud
+tests/                test automatici
+docs/                 design.md e DEPLOY.md
 ```
 
 ## Provalo in locale
@@ -47,12 +52,27 @@ adk web                            # interfaccia web su http://localhost:8000
 
 🔒 La chiave non va mai nel codice né nei commit: `.env` è già escluso da git.
 
+## Su Telegram e in produzione
+
+Su Telegram nei gruppi il bot risponde a `/chiedi <domanda>` o quando rispondi a un suo messaggio (le menzioni `@username` solo con la privacy mode di Telegram disattivata), e sempre in privato. Ogni lunedì alle 9:00 pubblica un **digest settimanale** delle novità prese da feed RSS scelti da noi. Il comando `/privacy` spiega come usa i messaggi.
+
+```bash
+pip install -r requirements-dev.txt        # una tantum, con il venv attivo
+.venv/bin/python scripts/run_polling.py   # il bot su Telegram dal tuo computer, senza cloud
+./deploy/deploy.sh                        # il deploy su Google Cloud (Cloud Run)
+```
+
+- Come è fatto e perché: [`docs/design.md`](docs/design.md)
+- Il deploy passo per passo (guida del webinar): [`docs/DEPLOY.md`](docs/DEPLOY.md)
+- Dipendenze: `requirements-server.txt` (il servizio) e `requirements-dev.txt` (sviluppo e test)
+- Test: `.venv/bin/pytest`
+
 ## Roadmap
 
 - [x] Workshop: agente con strumenti, stato e guardrail
-- [ ] Digest settimanale di notizie nel gruppo Telegram della community
-- [ ] Deploy (Cloud Run + webhook Telegram)
-- [ ] Test automatici per strumenti e guardrail
+- [x] Digest settimanale di notizie nel gruppo Telegram della community (nel codice; in prova sul gruppo di test)
+- [x] Deploy (Cloud Run + webhook Telegram) (nel codice; in prova sul gruppo di test)
+- [x] Test automatici per strumenti e guardrail
 
 Le prossime cose da fare sono nelle [issue](../../issues), a partire da quelle con l'etichetta `good first issue`.
 
