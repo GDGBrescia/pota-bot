@@ -8,6 +8,8 @@ from fastapi import FastAPI, Header, HTTPException, Request
 from pota_bot.config import Settings
 
 logging.basicConfig(level=logging.INFO)
+# httpx scriverebbe nei log l'URL completo, che per Telegram contiene il token del bot.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 

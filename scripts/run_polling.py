@@ -25,6 +25,8 @@ from pota_bot.storage import MemoryProposalStore  # noqa: E402
 from pota_bot.telegram import TelegramClient  # noqa: E402
 
 logging.basicConfig(level=logging.INFO)
+# httpx scriverebbe nei log l'URL completo, che per Telegram contiene il token del bot.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 async def run_bot(telegram: TelegramClient) -> None:
