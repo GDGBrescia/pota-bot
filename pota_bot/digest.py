@@ -55,7 +55,12 @@ async def fetch_feed(http: httpx.AsyncClient, feed: dict) -> list[FeedItem]:
 def select_recent(items: list[FeedItem], now: datetime, days: int = 7, undated_per_source: int = 3) -> list[FeedItem]:
     """Le notizie degli ultimi `days` giorni, più recenti prima, e qualche notizia senza data per fonte."""
     since = now - timedelta(days=days)
-    items = list({i.link: i for i in reversed(items)}.values())[::-1]  # un solo item per link, vince il primo
+    seen, unique = set(), []
+    for i in items:  # un solo item per link: vince il primo, l'ordine resta quello originale
+        if i.link not in seen:
+            seen.add(i.link)
+            unique.append(i)
+    items = unique
     dated = sorted((i for i in items if i.published and i.published >= since), key=lambda i: i.published, reverse=True)
     undated, per_source = [], {}
     for i in items:
