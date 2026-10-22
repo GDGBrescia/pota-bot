@@ -72,7 +72,7 @@ $G run deploy "$SERVICE" --source . --region "$REGION" --service-account "$SA" \
   --set-env-vars "TELEGRAM_BOT_USERNAME=$TELEGRAM_BOT_USERNAME,TELEGRAM_DIGEST_CHAT_ID=$TELEGRAM_DIGEST_CHAT_ID,POTA_USE_FIRESTORE=true" \
   --set-secrets "TELEGRAM_BOT_TOKEN=pota-telegram-token:latest,GOOGLE_API_KEY=pota-gemini-key:latest,TELEGRAM_WEBHOOK_SECRET=pota-webhook-secret:latest,POTA_TASK_TOKEN=pota-task-token:latest"
 URL=$($G run services describe "$SERVICE" --region "$REGION" --format='value(status.url)')
-curl -fsS "$URL/healthz" >/dev/null || { echo "healthz fallito: $URL" >&2; exit 1; }
+curl -fsS "$URL/health" >/dev/null || { echo "health fallito: $URL" >&2; exit 1; }
 echo "Servizio attivo: $URL"
 
 step "6/7 Collego Telegram al servizio (webhook)"

@@ -19,7 +19,7 @@ Telegram ──webhook──► Cloud Run (FastAPI, max 1 istanza)
                         ├─ POST /telegram/webhook  → PotaBot → AgentChat (ADK + Gemini) → risposta
                         │                                         └─ propose_topic → ProposalStore (Firestore)
                         ├─ POST /tasks/digest      ← Cloud Scheduler (lun 9:00) → feed RSS → Gemini → messaggio
-                        └─ GET  /healthz
+                        └─ GET  /health
 Segreti (Secret Manager): token Telegram, chiave Gemini, segreto webhook, token dei task
 ```
 

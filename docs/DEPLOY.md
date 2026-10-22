@@ -70,7 +70,7 @@ Lancia `./deploy/deploy.sh`. Ogni passo stampa `▶ N/7 ...`. Per ognuno: cosa f
 - **Durata:** ⏱ da misurare nella prova generale
 
 ### Passo 5/7: build e deploy su Cloud Run
-- **Cosa fa:** Cloud Build costruisce il container dal `Dockerfile` e Cloud Run lo pubblica (0-1 istanze, 1 GiB, nessun costo quando nessuno scrive). Poi controlla `/healthz`.
+- **Cosa fa:** Cloud Build costruisce il container dal `Dockerfile` e Cloud Run lo pubblica (0-1 istanze, 1 GiB, nessun costo quando nessuno scrive). Poi controlla `/health` (non `/healthz`: Cloud Run riserva i percorsi che finiscono in `z`).
 - **Cosa dire:** "Non ho Docker sul portatile: carico il codice e la build la fa Google. Scala a zero: se nessuno scrive, non paghiamo."
 - **Console:** Cloud Run → servizio `pota-bot` → Revisioni e Log; Cloud Build → Cronologia.
 - **Durata:** circa 2-4 minuti secondo lo script, ⏱ da misurare nella prova generale. Tempo morto: riempilo con il passo 3 e 4 già spiegati, o con le domande del pubblico.

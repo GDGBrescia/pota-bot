@@ -20,8 +20,8 @@ def _same_secret(given: str | None, expected: str) -> bool:
 def create_app(bot, settings: Settings, digest_job: Callable[[], Awaitable[str]]) -> FastAPI:
     app = FastAPI(title="Pota Bot")
 
-    @app.get("/healthz")
-    async def healthz():
+    @app.get("/health")
+    async def health():
         return {"ok": True}
 
     @app.post("/telegram/webhook")

@@ -27,9 +27,9 @@ def make_client():
     return TestClient(create_app(bot, SETTINGS, digest_job)), bot, digests
 
 
-def test_healthz():
+def test_health():
     client, _, _ = make_client()
-    assert client.get("/healthz").json() == {"ok": True}
+    assert client.get("/health").json() == {"ok": True}
 
 
 def test_webhook_rejects_wrong_secret():
