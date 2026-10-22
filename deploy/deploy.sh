@@ -91,10 +91,11 @@ TASK_TOKEN=$($G secrets versions access latest --secret=pota-task-token)
 JOB_ARGS=(--location "$SCHEDULER_REGION" --schedule "$DIGEST_SCHEDULE" --time-zone "Europe/Rome"
   --uri "$URL/tasks/digest" --http-method POST)
 if $G scheduler jobs describe pota-bot-digest --location "$SCHEDULER_REGION" >/dev/null 2>&1; then
-  $G scheduler jobs update http pota-bot-digest "${JOB_ARGS[@]}" --update-headers "X-Pota-Task-Token=$TASK_TOKEN"
+  $G scheduler jobs update http pota-bot-digest "${JOB_ARGS[@]}" --update-headers "X-Pota-Task-Token=$TASK_TOKEN" >/dev/null
 else
-  $G scheduler jobs create http pota-bot-digest "${JOB_ARGS[@]}" --headers "X-Pota-Task-Token=$TASK_TOKEN"
+  $G scheduler jobs create http pota-bot-digest "${JOB_ARGS[@]}" --headers "X-Pota-Task-Token=$TASK_TOKEN" >/dev/null
 fi
+echo "Digest programmato: $DIGEST_SCHEDULE (Europe/Rome)"
 
 printf '\n\033[1;32m✅ Pota Bot è online: %s\033[0m\n' "$URL"
 echo "Digest subito: $G scheduler jobs run pota-bot-digest --location $SCHEDULER_REGION"
