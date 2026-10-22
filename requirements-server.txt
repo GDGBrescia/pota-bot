@@ -2,5 +2,4 @@
 fastapi==0.141.1
 uvicorn==0.54.0
 httpx==0.28.1
-feedparser==6.0.14
 google-cloud-firestore==2.34.1

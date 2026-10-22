@@ -1,1 +1,2 @@
 google-adk==2.10.0
+feedparser==6.0.14
